@@ -1,0 +1,321 @@
+<!doctype html>
+<html>
+<!-- ///// head \\\\ -->
+<head>
+<style type="text/css">
+	body {
+		margin: 0;
+		padding:0;
+	}
+	#content {
+		margin: 0;
+		padding: 0;
+		display:table;
+	}
+	#ul {
+		display:table-row;
+		overflow:hidden;
+		height: 300px;
+		width: 100%;
+		background: #f5f5f5;
+		margin:0;
+		padding:0;
+	}
+	.node {
+		vertical-align:bottom;
+		box-sizing:border-box;
+		margin:0;
+		padding:0;
+		list-style-type:none;
+		display:table-cell;
+	}
+	
+	.node div {
+		text-align:center;
+		border: 2px 1px 0 1px black;
+		background:#cf0000;
+	}
+</style>
+</head>
+
+<!-- ///// body \\\\ -->
+<body>
+
+	<div id="content">
+	
+		<ul id="ul">
+		
+		</ul>
+		<textarea id="txt" rows="5" cols="20"></textarea>
+		<button id="show" onclick="make(getArray())">Show</button>
+		<button id="btn" onclick="perform()">Sort!</button>
+	
+	</div>
+
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script>
+//var a = [34, 203, 3, 746, 200, 984, 198, 764, 9];
+
+var arr = null;
+var l, r = null;
+
+function getArray() {
+
+	var txt = document.getElementById('txt').value;
+	var a = txt.split(',');
+	try {
+		for (var i = 0; i < a.length;i++) {
+			a[i] = parseInt(a[i]);
+			if (a >= Number.MAX_SAFE_INTEGER || a <= Number.MIN_SAFE_INTEGER)
+				throw "Woah, you've got some big numbers there.  I can't work under these circumstances... Sorry";
+		}
+	} catch (e) {
+		alert(e);
+		return 0;
+	}
+	console.log(a);
+	arr = a;
+	l = 0;
+	r = arr.length-1;
+}
+
+function getWidth() {
+  if (self.innerHeight) {
+    return self.innerWidth;
+  }
+
+  if (document.documentElement && document.documentElement.clientHeight) {
+    return document.documentElement.clientWidth;
+  }
+
+  if (document.body) {
+    return document.body.clientWidth;
+  }
+}
+
+function make() {
+
+
+	var nodeWidth = parseFloat(getWidth() / arr.length) + 'px';
+	var ul = document.getElementById('ul');
+	var min = Math.min.apply(Math, arr);
+	var max = Math.max.apply(Math, arr);
+	var range = max - min;
+	while (ul.firstChild) {
+		ul.removeChild(ul.firstChild);
+	}
+	for (var i = 0; i < arr.length; i++) {
+		var li = document.createElement('li');
+		var div = document.createElement('div');
+		div.innerHTML = arr[i];
+		div.style.height = parseFloat(((arr[i])*300)/range) + 'px';
+		if (parseFloat(div.style.height) < 20)
+			div.style.height = '20px';
+		li.id = 'li-' + i;
+		li.className = 'node';
+		li.style.width = nodeWidth;
+		li.appendChild(div);
+		ul.appendChild(li); 
+	}
+}
+
+function bubbleSort(arr){
+   var len = this.arr.length;
+   for (var i = len-1; i>=0; i--){
+     for(var j = 1; j<=i; j++){
+		//document.getElementById('li-'+(j-1)).style.backgroundColor= 'green';
+		//document.getElementById('li-'+j).style.backgroundColor= 'green';
+		setTimeout(function() {
+			console.log('!!');
+			console.log(this.arr);
+			if(this.arr[j-1]>this.arr[j]){
+			   var temp = this.arr[j-1];
+			   this.arr[j-1] = this.arr[j];
+			   this.arr[j] = temp;
+			   make(this.arr);
+			}
+		}, 50, this);
+		//document.getElementById('li-'+j).style.backgroundColor= '#cf0000';
+		//document.getElementById('li-'+i).style.backgroundColor= '#cf0000';
+     }
+   }
+   return this.arr;
+}
+
+function selectionSort(arr){
+  var minIdx, temp, 
+      len = arr.length;
+  for(var i = 0; i < len; i++){
+    minIdx = i;
+    for(var  j = i+1; j<len; j++){
+       if(arr[j]<arr[minIdx]){
+          minIdx = j;
+       }
+    }
+    temp = arr[i];
+    arr[i] = arr[minIdx];
+    arr[minIdx] = temp;
+  }
+  return arr;
+}
+
+function insertionSort(arr){
+  var i, len = arr.length, el, j;
+
+  for(i = 1; i<len; i++){
+    el = arr[i];
+    j = i;
+
+    while(j>0 && arr[j-1]>toInsert){
+      arr[j] = arr[j-1];
+      j--;
+   }
+
+   arr[j] = el;
+  }
+
+  return arr;
+}
+
+function mergeSort(arr){
+   var len = arr.length;
+   if(len <2)
+      return arr;
+   var mid = Math.floor(len/2),
+       left = arr.slice(0,mid),
+       right =arr.slice(mid);
+   //send left and right to the mergeSort to broke it down into pieces
+   //then merge those
+   return merge(setTimeout(mergeSort(left),500),setTimeout(mergeSort(right),500));
+}
+
+function merge(left, right){
+  var result = [],
+      lLen = left.length,
+      rLen = right.length,
+      l = 0,
+      r = 0;
+  while(l < lLen && r < rLen){
+     if(left[l] < right[r]){
+       result.push(left[l++]);
+     }
+     else{
+       result.push(right[r++]);
+    }
+  }  
+  //remaining part needs to be addred to the result
+  return result.concat(left.slice(l,l)).concat(right.slice(r,r));
+}
+
+function quickSort(arr, left, right){
+   var len = arr.length, 
+   pivot,
+   partitionIndex;
+
+  if(left < right){
+    pivot = right;
+	console.log("!!");
+	console.log(arr);
+    partitionIndex = partition(arr, pivot, left, right);
+    
+   //sort left and right
+   quickSort(arr, left, partitionIndex - 1);
+   
+   quickSort(arr, partitionIndex + 1, right);
+   
+  }
+  return arr;
+}
+
+function partition(arr, pivot, left, right){
+   var pivotValue = arr[pivot],
+       partitionIndex = left;
+
+   for(var i = left; i < right; i++){
+    if(arr[i] < pivotValue){
+      swap(arr, i, partitionIndex);
+      partitionIndex++;
+    }
+  }
+  swap(arr, right, partitionIndex);
+  return partitionIndex;
+}
+
+function swap(arr, i, j){
+   var temp = arr[i];
+   arr[i] = arr[j];
+   arr[j] = temp;
+   make(arr);
+   pausecomp(100);
+}
+
+function heapSort(arr){
+  var len = arr.length,
+      end = len-1;
+
+  heapify(arr, len);
+  
+  while(end > 0){
+   swap(arr, end--, 0);
+   siftDown(arr, 0, end);
+  }
+  return arr;
+}
+
+function heapify(arr, len){
+   // break the array into root + two sides, to create tree (heap)
+   var mid = Math.floor((len-2)/2);
+   while(mid >= 0){
+    siftDown(arr, mid--, len-1);    
+  }
+}
+
+function siftDown(arr, start, end){
+   var root = start,
+       child = root*2 + 1,
+       toSwap = root;
+   while(child <= end){
+      if(arr[toSwap] < arr[child]){
+        swap(arr, toSwap, child);
+      }
+      if(child+1 <= end && arr[toSwap] < arr[child+1]){
+        swap(arr, toSwap, child+1)
+      }
+      if(toSwap != root){
+         swap(arr, root, toSwap);
+         root = toSwap;
+      }
+      else{
+         return; 
+      }
+      toSwap = root;
+      child = root*2+1
+  }
+}
+
+
+
+function pausecomp(ms) {
+	ms += new Date().getTime();
+	while (new Date() < ms){
+		console.log('paused');
+	}
+}
+
+function perform() {
+	var a = quickSort(arr, l, r);
+	make(a);
+	console.log('----------arr----------------');
+	console.log(a);
+}
+
+$.fn.redraw = function(){
+  $(this).each(function(){
+    var redraw = this.offsetHeight;
+  });
+}
+</script>
+
+</html>
